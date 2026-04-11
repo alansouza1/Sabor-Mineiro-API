@@ -28,8 +28,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "Falha na autenticação: " + ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
+        ex.printStackTrace();
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("message", "An unexpected error occurred");
