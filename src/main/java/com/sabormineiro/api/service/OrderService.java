@@ -39,17 +39,17 @@ public class OrderService {
             address = addressRepository.findById(request.getDeliveryAddressId())
                     .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
         } else if (request.getCustomer() != null) {
-            // Fallback: Create or retrieve client by phone for the demo user context
-            String phone = request.getCustomer().getPhone().replaceAll("\\D", "");
-            client = clientRepository.findByCpf(phone).orElseGet(() -> {
-                // Find any user to link to if admin is not found (for demo/guest flow)
-                User systemUser = userRepository.findByEmail("admin@sabormineiro.com")
-                        .orElseGet(() -> userRepository.findAll().stream().findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException("No users found in system")));
+            // Find system user to link the guest/demo checkout
+            User systemUser = userRepository.findByEmail("admin@sabormineiro.com")
+                    .orElseGet(() -> userRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("No users found in system")));
 
+            // FIX: Check if this user already has a client profile to avoid unique constraint violation
+            client = clientRepository.findByUser(systemUser).orElseGet(() -> {
+                String phone = request.getCustomer().getPhone().replaceAll("\\D", "");
                 return clientRepository.save(Client.builder()
                         .celular(phone)
-                        .cpf(phone)
+                        .cpf(phone.length() >= 11 ? phone.substring(0, 11) : phone)
                         .user(systemUser)
                         .build());
             });
