@@ -6,5 +6,6 @@ public enum ERole {
     ATENDENTE,
     AUXILIAR_COZINHA,
     ENTREGADOR,
-    CLIENTE
+    CLIENTE,
+    DEMO
 }

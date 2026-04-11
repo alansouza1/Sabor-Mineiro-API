@@ -17,9 +17,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
 
 @SpringBootApplication
 public class SaborMineiroApiApplication {
+
+	@Value("${sabormineiro.admin.email}")
+	private String adminEmail;
+
+	@Value("${sabormineiro.admin.password}")
+	private String adminPassword;
+
+	@Value("${sabormineiro.demo.email}")
+	private String demoEmail;
+
+	@Value("${sabormineiro.demo.password}")
+	private String demoPassword;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SaborMineiroApiApplication.class, args);
@@ -39,22 +52,35 @@ public class SaborMineiroApiApplication {
 			}
 
 			// Admin User
-			userRepository.findByEmail("admin@sabormineiro.com").ifPresentOrElse(
+			userRepository.findByEmail(adminEmail).ifPresentOrElse(
 				user -> {
-					user.setPassword(passwordEncoder.encode("admin123"));
+					user.setPassword(passwordEncoder.encode(adminPassword));
 					userRepository.save(user);
 				},
 				() -> {
 					Role adminRole = roleRepository.findByName(ERole.ADMIN).get();
 					User admin = User.builder()
 							.name("Admin")
-							.email("admin@sabormineiro.com")
-							.password(passwordEncoder.encode("admin123"))
+							.email(adminEmail)
+							.password(passwordEncoder.encode(adminPassword))
 							.roles(Set.of(adminRole))
 							.build();
 					userRepository.save(admin);
 				}
 			);
+
+			// Demo User
+			if (userRepository.findByEmail(demoEmail).isEmpty()) {
+				Role demoRole = roleRepository.findByName(ERole.DEMO).get();
+				User demo = User.builder()
+						.name("Demo Recrutador")
+						.email(demoEmail)
+						.password(passwordEncoder.encode(demoPassword))
+						.roles(Set.of(demoRole))
+						.build();
+				userRepository.save(demo);
+			}
+
 
 			// Products
 			if (productRepository.count() == 0) {
