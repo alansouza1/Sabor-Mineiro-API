@@ -1,16 +1,24 @@
-INSERT INTO roles(name) VALUES('ADMIN');
-INSERT INTO roles(name) VALUES('COZINHEIRO');
-INSERT INTO roles(name) VALUES('ATENDENTE');
-INSERT INTO roles(name) VALUES('AUXILIAR_COZINHA');
-INSERT INTO roles(name) VALUES('ENTREGADOR');
-INSERT INTO roles(name) VALUES('CLIENTE');
+-- Roles
+INSERT INTO roles(name) VALUES('ADMIN') ON CONFLICT (name) DO NOTHING;
+INSERT INTO roles(name) VALUES('COZINHEIRO') ON CONFLICT (name) DO NOTHING;
+INSERT INTO roles(name) VALUES('ATENDENTE') ON CONFLICT (name) DO NOTHING;
+INSERT INTO roles(name) VALUES('AUXILIAR_COZINHA') ON CONFLICT (name) DO NOTHING;
+INSERT INTO roles(name) VALUES('ENTREGADOR') ON CONFLICT (name) DO NOTHING;
+INSERT INTO roles(name) VALUES('CLIENTE') ON CONFLICT (name) DO NOTHING;
 
 -- Default Admin (Password is 'admin123')
-INSERT INTO users(name, email, password) VALUES('Admin', 'admin@sabormineiro.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uqqQ8a');
-INSERT INTO user_roles(user_id, role_id) VALUES(1, 1);
+-- Note: We use a subquery to find the role ID to be database-agnostic
+INSERT INTO users(name, email, password) 
+VALUES('Admin', 'admin@sabormineiro.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uqqQ8a') 
+ON CONFLICT (email) DO NOTHING;
 
-INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Tutu à Mineira'
-, 'Feijão refogado e engrossado com farinha de mandioca, servido com torresmo crocante, couve refogada, ovo frito e arroz branco.', 32.23, 'https://picsum.photos/seed/tutu/800/600', 30, true, 'PRATOS_PRINCIPAIS');
+INSERT INTO user_roles(user_id, role_id) 
+SELECT u.id, r.id FROM users u, roles r 
+WHERE u.email = 'admin@sabormineiro.com' AND r.name = 'ADMIN'
+ON CONFLICT DO NOTHING;
+
+-- Products
+INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Tutu à Mineira', 'Feijão refogado e engrossado com farinha de mandioca, servido com torresmo crocante, couve refogada, ovo frito e arroz branco.', 32.23, 'https://picsum.photos/seed/tutu/800/600', 30, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Frango com Quiabo', 'Coxas e sobrecoxas de frango cozidas em molho caseiro, acompanhadas de quiabo refogado, angu cremoso e arroz soltinho.', 30.32, 'https://picsum.photos/seed/frango/800/600', 30, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Feijoada Mineira', 'Feijoada completa com carnes suínas, linguiça, paio, costelinha, servida com couve, farofa, laranja e arroz branco.', 45.00, 'https://picsum.photos/seed/feijoada/800/600', 30, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Feijão Tropeiro', 'Feijão tropeiro com linguiça, bacon, torresmo, ovo, farofa e couve crocante, servido com arroz branco.', 34.00, 'https://picsum.photos/seed/tropeiro/800/600', 30, true, 'PRATOS_PRINCIPAIS');
@@ -32,5 +40,5 @@ INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_prod
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Isca de Tilápia', 'Porção de iscas de tilápia empanadas e fritas, acompanhadas de molho tártaro caseiro.', 42.00, 'https://picsum.photos/seed/tilapia/800/600', 25, true, 'ENTRADAS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Mandioca Frita com Bacon', 'Porção generosa de mandioca frita crocante, coberta com pedaços de bacon e queijo derretido.', 32.00, 'https://picsum.photos/seed/mandiocafrita/800/600', 40, true, 'ENTRADAS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Leitão à Pururuca', 'Pedaços suculentos de leitão assado com a pele pururucada, servido com farofa de banana, couve e arroz.', 65.00, 'https://picsum.photos/seed/leitao/800/600', 10, true, 'PRATOS_PRINCIPAIS');
-INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Frango ao Molho Pardo', 'Tradicional frango caipira cozido no próprio sangue com temperos verdes, acompanhado de arroz e angu.', 58.00, 'https://picsum.photos/seed/molhopardo/800/600', 12, true, 'PRATOS_PRINCIPAIS');
+INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Frango ao Molho Pardo', 'Tradicional frango caipira cozido no próprio sangue with temperos verdes, acompanhado de arroz e angu.', 58.00, 'https://picsum.photos/seed/molhopardo/800/600', 12, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Arroz com Suã', 'Arroz cozido with pedaços de suã (espinha dorsal do porco com carne), muito temperado e saboroso.', 46.00, 'https://picsum.photos/seed/sua/800/600', 18, true, 'PRATOS_PRINCIPAIS');
