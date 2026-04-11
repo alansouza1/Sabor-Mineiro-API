@@ -16,8 +16,12 @@ public enum PaymentMethod {
     }
 
     public static PaymentMethod fromValue(String value) {
+        if (value == null) return PIX;
+        
+        String normalized = value.toLowerCase().replace("_", "");
         for (PaymentMethod method : PaymentMethod.values()) {
-            if (method.value.equalsIgnoreCase(value)) {
+            if (method.value.equalsIgnoreCase(normalized) || 
+                (method == CARD && normalized.contains("card"))) {
                 return method;
             }
         }

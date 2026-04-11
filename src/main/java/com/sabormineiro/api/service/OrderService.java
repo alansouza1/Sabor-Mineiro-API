@@ -42,11 +42,15 @@ public class OrderService {
             // Fallback: Create or retrieve client by phone for the demo user context
             String phone = request.getCustomer().getPhone().replaceAll("\\D", "");
             client = clientRepository.findByCpf(phone).orElseGet(() -> {
-                // Simplified: use phone as "fake CPF" for demo guest checkout
+                // Find any user to link to if admin is not found (for demo/guest flow)
+                User systemUser = userRepository.findByEmail("admin@sabormineiro.com")
+                        .orElseGet(() -> userRepository.findAll().stream().findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("No users found in system")));
+
                 return clientRepository.save(Client.builder()
                         .celular(phone)
                         .cpf(phone)
-                        .user(userRepository.findByEmail("admin@sabormineiro.com").get()) // Link to system user
+                        .user(systemUser)
                         .build());
             });
 
