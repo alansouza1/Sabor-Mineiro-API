@@ -26,3 +26,8 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+sabormineiro:
+  app:
+    jwtSecret: "mineiroSecretKeyForCollegeProject2026WithEnoughLengthToAvoidSecurityException"
+    jwtExpirationMs: 86400000

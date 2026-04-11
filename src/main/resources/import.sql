@@ -1,4 +1,16 @@
-INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Tutu à Mineira', 'Feijão refogado e engrossado com farinha de mandioca, servido com torresmo crocante, couve refogada, ovo frito e arroz branco.', 32.23, 'https://picsum.photos/seed/tutu/800/600', 30, true, 'PRATOS_PRINCIPAIS');
+INSERT INTO roles(name) VALUES('ADMIN');
+INSERT INTO roles(name) VALUES('COZINHEIRO');
+INSERT INTO roles(name) VALUES('ATENDENTE');
+INSERT INTO roles(name) VALUES('AUXILIAR_COZINHA');
+INSERT INTO roles(name) VALUES('ENTREGADOR');
+INSERT INTO roles(name) VALUES('CLIENTE');
+
+-- Default Admin (Password is 'admin123')
+INSERT INTO users(name, email, password) VALUES('Admin', 'admin@sabormineiro.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uqqQ8a');
+INSERT INTO user_roles(user_id, role_id) VALUES(1, 1);
+
+INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Tutu à Mineira'
+, 'Feijão refogado e engrossado com farinha de mandioca, servido com torresmo crocante, couve refogada, ovo frito e arroz branco.', 32.23, 'https://picsum.photos/seed/tutu/800/600', 30, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Frango com Quiabo', 'Coxas e sobrecoxas de frango cozidas em molho caseiro, acompanhadas de quiabo refogado, angu cremoso e arroz soltinho.', 30.32, 'https://picsum.photos/seed/frango/800/600', 30, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Feijoada Mineira', 'Feijoada completa com carnes suínas, linguiça, paio, costelinha, servida com couve, farofa, laranja e arroz branco.', 45.00, 'https://picsum.photos/seed/feijoada/800/600', 30, true, 'PRATOS_PRINCIPAIS');
 INSERT INTO products (nome, descricao, preco, url_imagem, qtd_disp, precisa_produzir, categoria) VALUES ('Feijão Tropeiro', 'Feijão tropeiro com linguiça, bacon, torresmo, ovo, farofa e couve crocante, servido com arroz branco.', 34.00, 'https://picsum.photos/seed/tropeiro/800/600', 30, true, 'PRATOS_PRINCIPAIS');
