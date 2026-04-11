@@ -14,6 +14,7 @@ import java.util.List;
 public class OrderRequestDTO {
     private Long clientId;
     private Long deliveryAddressId;
+    private CustomerDTO customer; // Fallback for quick checkout/demo
     private String paymentMethod;
     private List<OrderItemRequestDTO> items;
 }

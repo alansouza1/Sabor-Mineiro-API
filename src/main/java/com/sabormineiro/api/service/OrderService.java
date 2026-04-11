@@ -3,10 +3,7 @@ package com.sabormineiro.api.service;
 import com.sabormineiro.api.dto.*;
 import com.sabormineiro.api.entity.*;
 import com.sabormineiro.api.exception.ResourceNotFoundException;
-import com.sabormineiro.api.repository.AddressRepository;
-import com.sabormineiro.api.repository.ClientRepository;
-import com.sabormineiro.api.repository.OrderRepository;
-import com.sabormineiro.api.repository.ProductRepository;
+import com.sabormineiro.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,24 +22,55 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final ClientRepository clientRepository;
     private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
+    private final CEPRepository cepRepository;
     private final ProductService productService;
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO request) {
-        Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
-        
-        Address address = addressRepository.findById(request.getDeliveryAddressId())
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+        Client client;
+        Address address;
 
-        if (!address.getClient().getId().equals(client.getId())) {
-            throw new IllegalArgumentException("Address does not belong to the client");
+        // Smart Resolution Logic for Demo/Quick Checkout
+        if (request.getClientId() != null) {
+            client = clientRepository.findById(request.getClientId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+            
+            address = addressRepository.findById(request.getDeliveryAddressId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+        } else if (request.getCustomer() != null) {
+            // Fallback: Create or retrieve client by phone for the demo user context
+            String phone = request.getCustomer().getPhone().replaceAll("\\D", "");
+            client = clientRepository.findByCpf(phone).orElseGet(() -> {
+                // Simplified: use phone as "fake CPF" for demo guest checkout
+                return clientRepository.save(Client.builder()
+                        .celular(phone)
+                        .cpf(phone)
+                        .user(userRepository.findByEmail("admin@sabormineiro.com").get()) // Link to system user
+                        .build());
+            });
+
+            // Create temporary address for this order
+            CEP defaultCep = cepRepository.findByCep("00000000").orElseGet(() -> 
+                cepRepository.save(CEP.builder().cep("00000000").cidade("Belo Horizonte").uf("MG").build())
+            );
+
+            address = addressRepository.save(Address.builder()
+                    .logradouro(request.getCustomer().getAddress())
+                    .numero("S/N")
+                    .bairro("Centro")
+                    .padrao(false)
+                    .client(client)
+                    .cep(defaultCep)
+                    .build());
+        } else {
+            throw new IllegalArgumentException("Order must have a client ID or customer data");
         }
 
         Order order = Order.builder()
                 .client(client)
                 .deliveryAddress(address)
-                .paymentMethod(PaymentMethod.fromValue(request.getPaymentMethod()))
+                .paymentMethod(PaymentMethod.fromValue(request.getPaymentMethod() != null ? request.getPaymentMethod() : "pix"))
                 .status(OrderStatus.CRIADO)
                 .total(BigDecimal.ZERO)
                 .build();
@@ -85,7 +113,6 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + id));
         
-        // Try to find status by name (enum) or description
         OrderStatus newStatus;
         try {
             newStatus = OrderStatus.valueOf(statusValue.toUpperCase());
@@ -102,7 +129,7 @@ public class OrderService {
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
                 .customer(CustomerDTO.builder()
-                        .name(order.getClient().getUser().getName())
+                        .name(order.getClient().getUser() != null ? order.getClient().getUser().getName() : "Guest")
                         .phone(order.getClient().getCelular())
                         .address(formatAddress(order.getDeliveryAddress()))
                         .paymentMethod(order.getPaymentMethod().getValue())
@@ -115,8 +142,7 @@ public class OrderService {
     }
 
     private String formatAddress(Address addr) {
-        return String.format("%s, %s - %s, %s - %s", 
-            addr.getLogradouro(), addr.getNumero(), addr.getBairro(), addr.getCep().getCidade(), addr.getCep().getUf());
+        return String.format("%s, %s - %s", addr.getLogradouro(), addr.getNumero(), addr.getBairro());
     }
 
     private OrderItemResponseDTO toItemDTO(OrderItem item) {
