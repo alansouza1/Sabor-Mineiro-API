@@ -3,6 +3,8 @@ package com.sabormineiro.api.service;
 import com.sabormineiro.api.dto.*;
 import com.sabormineiro.api.entity.*;
 import com.sabormineiro.api.exception.ResourceNotFoundException;
+import com.sabormineiro.api.repository.AddressRepository;
+import com.sabormineiro.api.repository.ClientRepository;
 import com.sabormineiro.api.repository.OrderRepository;
 import com.sabormineiro.api.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,20 +23,34 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final ClientRepository clientRepository;
+    private final AddressRepository addressRepository;
     private final ProductService productService;
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO request) {
+        Client client = clientRepository.findById(request.getClientId())
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+        
+        Address address = addressRepository.findById(request.getDeliveryAddressId())
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+
+        if (!address.getClient().getId().equals(client.getId())) {
+            throw new IllegalArgumentException("Address does not belong to the client");
+        }
+
         Order order = Order.builder()
-                .customer(mapCustomer(request.getCustomer()))
-                .status(OrderStatus.PENDING)
+                .client(client)
+                .deliveryAddress(address)
+                .paymentMethod(PaymentMethod.fromValue(request.getPaymentMethod()))
+                .status(OrderStatus.CRIADO)
                 .total(BigDecimal.ZERO)
                 .build();
 
         List<OrderItem> items = request.getItems().stream()
                 .map(itemRequest -> {
                     Product product = productRepository.findById(itemRequest.getProductId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + itemRequest.getProductId()));
+                            .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + itemRequest.getProductId()));
                     
                     return OrderItem.builder()
                             .order(order)
@@ -67,36 +83,40 @@ public class OrderService {
     @Transactional
     public OrderResponseDTO updateStatus(UUID id, String statusValue) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + id));
         
-        order.setStatus(OrderStatus.fromValue(statusValue));
+        // Try to find status by name (enum) or description
+        OrderStatus newStatus;
+        try {
+            newStatus = OrderStatus.valueOf(statusValue.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            newStatus = OrderStatus.fromDescription(statusValue);
+        }
+        
+        order.setStatus(newStatus);
         Order updatedOrder = orderRepository.save(order);
         return toDTO(updatedOrder);
-    }
-
-    private Customer mapCustomer(CustomerDTO dto) {
-        return Customer.builder()
-                .name(dto.getName())
-                .phone(dto.getPhone())
-                .address(dto.getAddress())
-                .paymentMethod(PaymentMethod.fromValue(dto.getPaymentMethod()))
-                .build();
     }
 
     private OrderResponseDTO toDTO(Order order) {
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
                 .customer(CustomerDTO.builder()
-                        .name(order.getCustomer().getName())
-                        .phone(order.getCustomer().getPhone())
-                        .address(order.getCustomer().getAddress())
-                        .paymentMethod(order.getCustomer().getPaymentMethod().getValue())
+                        .name(order.getClient().getUser().getName())
+                        .phone(order.getClient().getCelular())
+                        .address(formatAddress(order.getDeliveryAddress()))
+                        .paymentMethod(order.getPaymentMethod().getValue())
                         .build())
                 .items(order.getItems().stream().map(this::toItemDTO).collect(Collectors.toList()))
                 .total(order.getTotal())
-                .status(order.getStatus().getValue())
+                .status(order.getStatus().getDescription())
                 .createdAt(order.getCreatedAt() != null ? order.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
                 .build();
+    }
+
+    private String formatAddress(Address addr) {
+        return String.format("%s, %s - %s, %s - %s", 
+            addr.getLogradouro(), addr.getNumero(), addr.getBairro(), addr.getCep().getCidade(), addr.getCep().getUf());
     }
 
     private OrderItemResponseDTO toItemDTO(OrderItem item) {
