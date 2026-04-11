@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("message", "Demo users cannot perform this action");
+        body.put("message", "Demo cannot perform this action");
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
 
