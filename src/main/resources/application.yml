@@ -9,6 +9,7 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
@@ -30,5 +31,11 @@ logging:
 
 sabormineiro:
   app:
-    jwtSecret: "mineiroSecretKeyForCollegeProject2026WithEnoughLengthToAvoidSecurityException"
+    jwtSecret: ${JWT_SECRET:mineiroSecretKeyForCollegeProject2026WithEnoughLengthToAvoidSecurityException}
     jwtExpirationMs: 86400000
+  admin:
+    email: ${ADMIN_EMAIL:admin@sabormineiro.com}
+    password: ${ADMIN_PASSWORD:admin123}
+  demo:
+    email: ${DEMO_EMAIL:demo@sabormineiro.com}
+    password: ${DEMO_PASSWORD:demo123}

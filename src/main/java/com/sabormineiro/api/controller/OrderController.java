@@ -27,7 +27,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COZINHEIRO') or hasRole('ATENDENTE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DEMO') or hasRole('COZINHEIRO') or hasRole('ATENDENTE')")
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         return ResponseEntity.ok(orderService.findAll());
     }
