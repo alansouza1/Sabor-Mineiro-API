@@ -73,7 +73,7 @@ public class SaborMineiroApiApplication {
 			if (userRepository.findByEmail(demoEmail).isEmpty()) {
 				Role demoRole = roleRepository.findByName(ERole.DEMO).get();
 				User demo = User.builder()
-						.name("Demo Recrutador")
+						.name("Demo User")
 						.email(demoEmail)
 						.password(passwordEncoder.encode(demoPassword))
 						.roles(Set.of(demoRole))
