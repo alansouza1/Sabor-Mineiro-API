@@ -31,11 +31,11 @@ logging:
 
 sabormineiro:
   app:
-    jwtSecret: ${JWT_SECRET:mineiroSecretKeyForCollegeProject2026WithEnoughLengthToAvoidSecurityException}
+    jwtSecret: ${JWT_SECRET}
     jwtExpirationMs: 86400000
   admin:
-    email: ${ADMIN_EMAIL:admin@sabormineiro.com}
-    password: ${ADMIN_PASSWORD:admin123}
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
   demo:
-    email: ${DEMO_EMAIL:demo@sabormineiro.com}
-    password: ${DEMO_PASSWORD:demo123}
+    email: ${DEMO_EMAIL}
+    password: ${DEMO_PASSWORD}
