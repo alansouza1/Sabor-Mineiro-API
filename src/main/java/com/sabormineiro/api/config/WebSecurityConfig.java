@@ -85,7 +85,7 @@ public class WebSecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
           auth.requestMatchers("/auth/**", "/api/auth/**").permitAll()
-              .requestMatchers("/products/**", "/api/products/**").permitAll()
+              .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**", "/api/products/**").permitAll()
               .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
               .anyRequest().authenticated()
         );
