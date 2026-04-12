@@ -42,12 +42,17 @@ public class SaborMineiroApiApplication {
 	CommandLineRunner init(RoleRepository roleRepository, UserRepository userRepository, 
 						  ProductRepository productRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			// Roles
+			// Roles - Seed safely without ID conflicts
 			for (ERole eRole : ERole.values()) {
 				if (roleRepository.findByName(eRole).isEmpty()) {
-					Role role = new Role();
-					role.setName(eRole);
-					roleRepository.save(role);
+					try {
+						Role role = new Role();
+						role.setName(eRole);
+						roleRepository.save(role);
+					} catch (Exception e) {
+						// Role might have been created by concurrent process or manual script
+						System.out.println("Role already exists or error saving: " + eRole);
+					}
 				}
 			}
 
