@@ -32,6 +32,9 @@ public class WebSecurityConfig {
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
 
+  @Autowired
+  private RateLimitingFilter rateLimitingFilter;
+
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
     return new AuthTokenFilter();
@@ -94,6 +97,7 @@ public class WebSecurityConfig {
     
     http.authenticationProvider(authenticationProvider());
 
+    http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     
     return http.build();
