@@ -32,7 +32,9 @@ The project follows a **Multi-layered Clean Architecture** to ensure scalability
 *   **JWT Implementation:** Stateless authentication using cryptographically signed tokens.
 *   **RBAC (Role-Based Access Control):** Granular permissions managed through Spring Security configuration and JWT filters.
     *   **ADMIN:** Full access to manage the catalog and orders.
-    *   **DEMO:** Specialized role for reviewers with read-only dashboard access.
+    *   **DEMO:** Specialized role for reviewers with read-only dashboard access. Uses `visitor_id` header for session isolation.
+
+> **🔒 Privacy Notice:** This is a public demo. The system implements **Session Isolation** to prevent users from seeing each other's data, but users are still encouraged to use fictional information.
 *   **Security Features:** BCrypt password hashing and global CORS configuration.
 
 ---

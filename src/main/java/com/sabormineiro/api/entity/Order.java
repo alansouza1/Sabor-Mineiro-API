@@ -35,6 +35,9 @@ public class Order {
     @Column(name = "guest_name")
     private String guestName;
 
+    @Column(name = "visitor_id")
+    private String visitorId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;

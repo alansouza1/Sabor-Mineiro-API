@@ -1,16 +1,16 @@
 package com.sabormineiro.api.service;
 
-import com.sabormineiro.api.dto.OrderRequestDTO;
-import com.sabormineiro.api.dto.OrderResponseDTO;
+import com.sabormineiro.api.dto.*;
 import com.sabormineiro.api.entity.*;
 import com.sabormineiro.api.exception.ResourceNotFoundException;
-import com.sabormineiro.api.repository.OrderRepository;
-import com.sabormineiro.api.repository.ProductRepository;
+import com.sabormineiro.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,7 +22,11 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final CustomerService customerService;
+    private final ClientRepository clientRepository;
+    private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
+    private final CEPRepository cepRepository;
+    private final ProductService productService;
     private final OrderCalculator orderCalculator;
     private final OrderMapper orderMapper;
 
@@ -37,6 +41,7 @@ public class OrderService {
         Order order = Order.builder()
                 .client(client)
                 .deliveryAddress(address)
+                .visitorId(request.getVisitorId())
                 .guestName(request.getCustomer() != null ? request.getCustomer().getName() : null)
                 .paymentMethod(PaymentMethod.fromValue(request.getPaymentMethod()))
                 .status(OrderStatus.CREATED)
@@ -67,8 +72,15 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponseDTO> findAll() {
-        return orderRepository.findAllByOrderByCreatedAtDesc().stream()
+    public List<OrderResponseDTO> findAll(String visitorId) {
+        List<Order> orders;
+        if (visitorId != null && !visitorId.isEmpty()) {
+            orders = orderRepository.findAllByVisitorIdOrderByCreatedAtDesc(visitorId);
+        } else {
+            orders = orderRepository.findAllByOrderByCreatedAtDesc();
+        }
+        
+        return orders.stream()
                 .map(orderMapper::toDTO)
                 .collect(Collectors.toList());
     }

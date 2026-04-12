@@ -22,6 +22,8 @@ public class OrderRequestDTO {
 
     private String paymentMethod;
 
+    private String visitorId;
+
     @NotEmpty(message = "Order must contain at least one item")
     @Valid
     private List<OrderItemRequestDTO> items;
