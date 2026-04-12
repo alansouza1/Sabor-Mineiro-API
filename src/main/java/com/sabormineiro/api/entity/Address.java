@@ -18,20 +18,20 @@ public class Address {
     private Long id;
 
     @Column(nullable = false)
-    private String logradouro;
+    private String street;
 
     @Column(nullable = false)
-    private String numero;
+    private String number;
 
-    private String complemento;
-
-    @Column(nullable = false)
-    private String bairro;
-
-    private String referencia;
+    private String complement;
 
     @Column(nullable = false)
-    private Boolean padrao;
+    private String neighborhood;
+
+    private String reference;
+
+    @Column(nullable = false)
+    private Boolean isDefault;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cep_id", nullable = false)

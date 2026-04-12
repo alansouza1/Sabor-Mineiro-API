@@ -21,8 +21,8 @@ public class CEP {
     private String cep;
 
     @Column(nullable = false)
-    private String cidade;
+    private String city;
 
     @Column(nullable = false, length = 2)
-    private String uf;
+    private String state;
 }

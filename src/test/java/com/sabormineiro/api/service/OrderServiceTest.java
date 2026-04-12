@@ -4,8 +4,6 @@ import com.sabormineiro.api.dto.OrderItemRequestDTO;
 import com.sabormineiro.api.dto.OrderRequestDTO;
 import com.sabormineiro.api.dto.OrderResponseDTO;
 import com.sabormineiro.api.entity.*;
-import com.sabormineiro.api.repository.AddressRepository;
-import com.sabormineiro.api.repository.ClientRepository;
 import com.sabormineiro.api.repository.OrderRepository;
 import com.sabormineiro.api.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,13 +32,13 @@ class OrderServiceTest {
     private ProductRepository productRepository;
 
     @Mock
-    private ClientRepository clientRepository;
+    private CustomerService customerService;
 
     @Mock
-    private AddressRepository addressRepository;
+    private OrderCalculator orderCalculator;
 
     @Mock
-    private ProductService productService;
+    private OrderMapper orderMapper;
 
     @InjectMocks
     private OrderService orderService;
@@ -53,20 +51,20 @@ class OrderServiceTest {
     void setUp() {
         testProduct = Product.builder()
                 .id(1L)
-                .nome("Product 1")
-                .preco(BigDecimal.valueOf(10.0))
-                .categoria(Category.PRATOS_PRINCIPAIS)
+                .name("Product 1")
+                .price(BigDecimal.valueOf(10.0))
+                .category(Category.PRATOS_PRINCIPAIS)
                 .build();
 
         User user = User.builder().id(1L).name("John Doe").email("john@example.com").build();
-        testClient = Client.builder().id(1L).user(user).celular("123456789").cpf("12345678901").build();
+        testClient = Client.builder().id(1L).user(user).phone("123456789").cpf("12345678901").build();
         
-        CEP cep = CEP.builder().cep("12345678").cidade("BH").uf("MG").build();
-        testAddress = Address.builder().id(1L).logradouro("Rua A").numero("1").bairro("Centro").cep(cep).client(testClient).build();
+        CEP cep = CEP.builder().cep("12345678").city("BH").state("MG").build();
+        testAddress = Address.builder().id(1L).street("Rua A").number("1").neighborhood("Centro").cep(cep).client(testClient).build();
     }
 
     @Test
-    void createOrder_ShouldCalculateTotalCorrectly() {
+    void createOrder_ShouldCalculateTotalAndSave() {
         // Arrange
         OrderItemRequestDTO itemRequest = OrderItemRequestDTO.builder()
                 .productId(1L)
@@ -80,14 +78,14 @@ class OrderServiceTest {
                 .items(List.of(itemRequest))
                 .build();
 
-        when(clientRepository.findById(1L)).thenReturn(Optional.of(testClient));
-        when(addressRepository.findById(1L)).thenReturn(Optional.of(testAddress));
+        when(customerService.resolveClient(any(), any())).thenReturn(testClient);
+        when(customerService.resolveAddress(any(), any(), any())).thenReturn(testAddress);
         when(productRepository.findById(1L)).thenReturn(Optional.of(testProduct));
-        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
-            Order order = (Order) invocation.getArgument(0);
-            order.setId(UUID.randomUUID());
-            return order;
-        });
+        
+        Order savedOrder = Order.builder().id(UUID.randomUUID()).build();
+        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
+        when(orderCalculator.calculateTotal(any())).thenReturn(BigDecimal.valueOf(20.0));
+        when(orderMapper.toDTO(any())).thenReturn(OrderResponseDTO.builder().total(BigDecimal.valueOf(20.0)).status("Created").build());
 
         // Act
         OrderResponseDTO response = orderService.createOrder(request);
@@ -95,32 +93,29 @@ class OrderServiceTest {
         // Assert
         assertNotNull(response);
         assertEquals(0, BigDecimal.valueOf(20.0).compareTo(response.getTotal()));
-        assertEquals(OrderStatus.CRIADO.getDescription(), response.getStatus());
         verify(orderRepository, times(1)).save(any(Order.class));
+        verify(orderCalculator, times(1)).calculateTotal(any());
     }
 
     @Test
-    void updateStatus_ShouldChangeStatus() {
+    void updateStatus_ShouldUpdateSuccessfully() {
         // Arrange
         UUID orderId = UUID.randomUUID();
         Order order = Order.builder()
                 .id(orderId)
-                .status(OrderStatus.CRIADO)
-                .client(testClient)
-                .deliveryAddress(testAddress)
-                .paymentMethod(PaymentMethod.PIX)
-                .total(BigDecimal.TEN)
+                .status(OrderStatus.CREATED)
                 .build();
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
         when(orderRepository.save(any(Order.class))).thenReturn(order);
+        when(orderMapper.toDTO(any())).thenReturn(OrderResponseDTO.builder().status("In production").build());
 
         // Act
-        OrderResponseDTO response = orderService.updateStatus(orderId, "em_producao");
+        OrderResponseDTO response = orderService.updateStatus(orderId, "in_production");
 
         // Assert
         assertNotNull(response);
-        assertEquals(OrderStatus.EM_PRODUCAO.getDescription(), response.getStatus());
+        assertEquals("In production", response.getStatus());
         verify(orderRepository, times(1)).save(order);
     }
 }

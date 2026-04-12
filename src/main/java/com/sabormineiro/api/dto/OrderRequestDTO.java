@@ -1,5 +1,7 @@
 package com.sabormineiro.api.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,13 @@ import java.util.List;
 public class OrderRequestDTO {
     private Long clientId;
     private Long deliveryAddressId;
-    private CustomerDTO customer; // Fallback for quick checkout/demo
+    
+    @Valid
+    private CustomerDTO customer; 
+
     private String paymentMethod;
+
+    @NotEmpty(message = "Order must contain at least one item")
+    @Valid
     private List<OrderItemRequestDTO> items;
 }
