@@ -80,7 +80,7 @@ class OrderServiceTest {
 
         when(customerService.resolveClient(any(), any())).thenReturn(testClient);
         when(customerService.resolveAddress(any(), any(), any())).thenReturn(testAddress);
-        when(productRepository.findById(1L)).thenReturn(Optional.of(testProduct));
+        when(productRepository.findAllById(any())).thenReturn(List.of(testProduct));
         
         Order savedOrder = Order.builder().id(UUID.randomUUID()).build();
         when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
