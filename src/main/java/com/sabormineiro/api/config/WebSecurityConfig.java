@@ -71,7 +71,8 @@ public class WebSecurityConfig {
         "http://127.0.0.1", 
         "http://localhost:3000", 
         "http://localhost:5173",
-        frontendUrl
+        frontendUrl,
+        frontendUrl.replace("https://", "https://www.")
     ));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Visitor-Id", "Accept", "Origin"));
