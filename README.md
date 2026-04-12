@@ -1,6 +1,6 @@
 # Sabor Mineiro - Backend API ⚙️
 
-A production-ready RESTful API for the Sabor Mineiro delivery system. Built with Java Spring Boot, this project demonstrates advanced architectural patterns, stateless security, and robust data persistence.
+A production-like RESTful API powering the Sabor Mineiro delivery platform. Built with Java Spring Boot, this project demonstrates advanced architectural patterns, stateless security, and robust data persistence.
 
 ---
 
@@ -30,7 +30,7 @@ The project follows a **Multi-layered Clean Architecture** to ensure scalability
 ## 🔐 Authentication & Authorization
 
 *   **JWT Implementation:** Stateless authentication using cryptographically signed tokens.
-*   **RBAC (Role-Based Access Control):** Granular permissions managed via custom Security Filter Chains.
+*   **RBAC (Role-Based Access Control):** Granular permissions managed through Spring Security configuration and JWT filters.
     *   **ADMIN:** Full access to manage the catalog and orders.
     *   **DEMO:** Specialized role for reviewers with read-only dashboard access.
 *   **Security Features:** BCrypt password hashing and global CORS configuration.
@@ -45,14 +45,14 @@ The project follows a **Multi-layered Clean Architecture** to ensure scalability
 
 ### Products
 *   `GET /api/products` - List the active menu (Public).
-*   `POST /api/products` - Create new dish (Admin only).
-*   `PUT /api/products/{id}` - Update dish details (Admin only).
-*   `DELETE /api/products/{id}` - Remove dish (Admin only).
+*   `POST /api/products` - Create new dish (ADMIN role only).
+*   `PUT /api/products/{id}` - Update dish details (ADMIN role only).
+*   `DELETE /api/products/{id}` - Remove dish (ADMIN role only).
 
 ### Orders
-*   `POST /api/orders` - Place a new order (Supports Guest & Registered flows).
-*   `GET /api/orders` - List all orders (Admin/Staff only).
-*   `PATCH /api/orders/{id}/status` - Update order lifecycle (Staff only).
+*   `POST /api/orders` - Place a new order (Supports both guest checkout and authenticated users).
+*   `GET /api/orders` - List all orders (ADMIN role only).
+*   `PATCH /api/orders/{id}/status` - Update order lifecycle (ADMIN role only).
 
 ---
 
@@ -102,6 +102,12 @@ src/main/java/com/sabormineiro/api/
 ├── repository/     # Data Access Layers
 └── service/        # Business Logic & Orchestrators
 ```
+
+---
+
+## 🔗 Frontend Repository
+
+https://github.com/alansouza1/sabor-mineiro-app
 
 ---
 
