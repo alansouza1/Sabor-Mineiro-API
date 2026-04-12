@@ -27,6 +27,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final CEPRepository cepRepository;
     private final ProductService productService;
+    private final CustomerService customerService;
     private final OrderCalculator orderCalculator;
     private final OrderMapper orderMapper;
 
