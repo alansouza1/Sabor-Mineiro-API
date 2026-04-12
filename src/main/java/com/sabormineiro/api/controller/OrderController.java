@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,30 +27,18 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DEMO')")
     public ResponseEntity<OrderResponseDTO> createOrder(@Valid @RequestBody OrderRequestDTO request) {
         log.info("REST request to create new order");
         return new ResponseEntity<>(orderService.createOrder(request), HttpStatus.CREATED);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DEMO') or hasRole('COZINHEIRO') or hasRole('ATENDENTE')")
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders(
+            Authentication authentication,
             @RequestHeader(value = "X-Visitor-Id", required = false) String visitorId) {
         log.info("REST request to get all orders");
         
-        // RBAC Check: If user is DEMO, force filtration by visitorId
-        boolean isOnlyDemo = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_DEMO")) && 
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        if (isOnlyDemo) {
-            log.debug("Demo user detected, filtering by visitorId: {}", visitorId);
-            return ResponseEntity.ok(orderService.findAll(visitorId));
-        }
-
-        return ResponseEntity.ok(orderService.findAll(null));
+        return ResponseEntity.ok(orderService.findAll(authentication, visitorId));
     }
 
     @PatchMapping("/{id}/status")
