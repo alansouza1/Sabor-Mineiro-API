@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+...
 @Slf4j
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
+@Tag(name = "Products", description = "Catalog management and menu listing")
 public class ProductController {
 
     private final ProductService productService;

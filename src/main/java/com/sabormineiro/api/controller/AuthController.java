@@ -28,10 +28,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+...
 @Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Endpoints for user login and registration")
 public class AuthController {
   
   private final AuthenticationManager authenticationManager;

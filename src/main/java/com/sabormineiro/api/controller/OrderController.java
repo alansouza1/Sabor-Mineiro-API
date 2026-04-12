@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+...
 @Slf4j
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
+@Tag(name = "Orders", description = "Order placement and lifecycle management")
 public class OrderController {
 
     private final OrderService orderService;

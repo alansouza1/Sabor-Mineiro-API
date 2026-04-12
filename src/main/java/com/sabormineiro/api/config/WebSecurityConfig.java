@@ -87,6 +87,7 @@ public class WebSecurityConfig {
         .authorizeHttpRequests(auth -> 
           auth.requestMatchers("/auth/**", "/api/auth/**").permitAll()
               .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**", "/api/products/**").permitAll()
+              .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
               .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
               .anyRequest().authenticated()
         );
