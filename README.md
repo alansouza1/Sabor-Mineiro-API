@@ -4,6 +4,14 @@ A production-like RESTful API powering the Sabor Mineiro delivery platform. Buil
 
 ---
 
+## 🌐 Live Integration
+
+The API is publicly available and integrated with the frontend application:
+
+Link: https://sabormineiro.alansouza.tech
+
+---
+
 ## 🚀 Live Documentation (Swagger)
 The API is fully documented using **OpenAPI 3 / Swagger**.
 *   **Interactive UI:** `http://localhost:8080/api/swagger-ui/index.html`
