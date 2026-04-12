@@ -70,16 +70,23 @@ public class SaborMineiroApiApplication {
 			);
 
 			// Demo User
-			if (userRepository.findByEmail(demoEmail).isEmpty()) {
-				Role demoRole = roleRepository.findByName(ERole.DEMO).get();
-				User demo = User.builder()
-						.name("Demo")
-						.email(demoEmail)
-						.password(passwordEncoder.encode(demoPassword))
-						.roles(Set.of(demoRole))
-						.build();
-				userRepository.save(demo);
-			}
+			userRepository.findByEmail(demoEmail).ifPresentOrElse(
+				user -> {
+					user.setName("Demo");
+					user.setPassword(passwordEncoder.encode(demoPassword));
+					userRepository.save(user);
+				},
+				() -> {
+					Role demoRole = roleRepository.findByName(ERole.DEMO).get();
+					User demo = User.builder()
+							.name("Demo")
+							.email(demoEmail)
+							.password(passwordEncoder.encode(demoPassword))
+							.roles(Set.of(demoRole))
+							.build();
+					userRepository.save(demo);
+				}
+			);
 
 
 			// Products
