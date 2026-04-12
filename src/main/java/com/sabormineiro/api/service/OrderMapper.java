@@ -39,9 +39,15 @@ public class OrderMapper {
             isOwner = order.getClient() != null && order.getClient().getUser() != null 
                       && order.getClient().getUser().getEmail().equals(currentUserEmail);
         } else {
-            // For anonymous users, we trust the service layer has already filtered by visitorId
-            // OR if this is being called immediately after creation, it is permitted
-            isOwner = true; 
+            // Defense-in-depth: For anonymous users, verify the X-Visitor-Id matches the order's visitorId
+            var attributes = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+            if (attributes instanceof org.springframework.web.context.request.ServletRequestAttributes) {
+                String reqVisitorId = ((org.springframework.web.context.request.ServletRequestAttributes) attributes).getRequest().getHeader("X-Visitor-Id");
+                isOwner = reqVisitorId != null && reqVisitorId.equals(order.getVisitorId());
+            } else {
+                // If not in a servlet context (e.g. testing or internal task), default to safe fallback
+                isOwner = false;
+            }
         }
 
         if (!isAdminOrStaff && !isOwner) {
