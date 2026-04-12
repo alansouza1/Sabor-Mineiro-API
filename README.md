@@ -6,7 +6,7 @@ A production-like RESTful API powering the Sabor Mineiro delivery platform. Buil
 
 ## 🌐 Live Integration
 
-The API is publicly available and integrated with the frontend application:
+The API is integrated with the frontend application:
 
 Link: https://sabormineiro.alansouza.tech
 
