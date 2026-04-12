@@ -74,6 +74,7 @@ public class OrderService {
         Order order = Order.builder()
                 .client(client)
                 .deliveryAddress(address)
+                .guestName(request.getCustomer() != null ? request.getCustomer().getName() : null)
                 .paymentMethod(PaymentMethod.fromValue(request.getPaymentMethod() != null ? request.getPaymentMethod() : "pix"))
                 .status(OrderStatus.CRIADO)
                 .total(BigDecimal.ZERO)
@@ -130,10 +131,13 @@ public class OrderService {
     }
 
     private OrderResponseDTO toDTO(Order order) {
+        String displayName = order.getGuestName() != null ? order.getGuestName() : 
+                           (order.getClient().getUser() != null ? order.getClient().getUser().getName() : "Guest");
+
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
                 .customer(CustomerDTO.builder()
-                        .name(order.getClient().getUser() != null ? order.getClient().getUser().getName() : "Guest")
+                        .name(displayName)
                         .phone(order.getClient().getCelular())
                         .address(formatAddress(order.getDeliveryAddress()))
                         .paymentMethod(order.getPaymentMethod().getValue())

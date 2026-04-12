@@ -32,6 +32,9 @@ public class Order {
     @JoinColumn(name = "delivery_address_id", nullable = false)
     private Address deliveryAddress;
 
+    @Column(name = "guest_name")
+    private String guestName;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;
