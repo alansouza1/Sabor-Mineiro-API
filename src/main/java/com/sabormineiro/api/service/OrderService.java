@@ -6,12 +6,14 @@ import com.sabormineiro.api.exception.ResourceNotFoundException;
 import com.sabormineiro.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,10 +50,19 @@ public class OrderService {
                 .status(OrderStatus.CREATED)
                 .build();
 
+        List<Long> productIds = request.getItems().stream()
+                .map(OrderItemRequestDTO::getProductId)
+                .collect(Collectors.toList());
+
+        Map<Long, Product> productMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
         List<OrderItem> items = request.getItems().stream()
                 .map(itemRequest -> {
-                    Product product = productRepository.findById(itemRequest.getProductId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + itemRequest.getProductId()));
+                    Product product = productMap.get(itemRequest.getProductId());
+                    if (product == null) {
+                        throw new ResourceNotFoundException("Product not found with ID: " + itemRequest.getProductId());
+                    }
                     
                     return OrderItem.builder()
                             .order(order)
@@ -73,10 +84,21 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponseDTO> findAll(String visitorId) {
+    public List<OrderResponseDTO> findAll(Authentication authentication, String visitorId) {
+        boolean isAuthenticated = authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal());
+        
+        boolean isOnlyDemo = isAuthenticated && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_DEMO")) && 
+                authentication.getAuthorities().stream()
+                .noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
         List<Order> orders;
-        if (visitorId != null && !visitorId.isEmpty()) {
-            orders = orderRepository.findAllByVisitorIdOrderByCreatedAtDesc(visitorId);
+        if (!isAuthenticated || isOnlyDemo) {
+            if (visitorId != null && !visitorId.isEmpty()) {
+                orders = orderRepository.findAllByVisitorIdOrderByCreatedAtDesc(visitorId);
+            } else {
+                orders = List.of();
+            }
         } else {
             orders = orderRepository.findAllByOrderByCreatedAtDesc();
         }
