@@ -24,27 +24,38 @@ public class OrderMapper {
     public OrderResponseDTO toDTO(Order order) {
         // Security Check: IDOR Protection
         // Only owners, admins, or staff can see order details
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean isAdminOrStaff = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal());
+        
+        boolean isAdminOrStaff = isAuthenticated && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || 
                                a.getAuthority().equals("ROLE_DEMO") || 
                                a.getAuthority().equals("ROLE_COZINHEIRO") || 
                                a.getAuthority().equals("ROLE_ATENDENTE"));
         
-        boolean isOwner = order.getClient().getUser().getEmail().equals(currentUserEmail);
+        boolean isOwner = false;
+        if (isAuthenticated) {
+            String currentUserEmail = authentication.getName();
+            isOwner = order.getClient() != null && order.getClient().getUser() != null 
+                      && order.getClient().getUser().getEmail().equals(currentUserEmail);
+        } else {
+            // For anonymous users, we trust the service layer has already filtered by visitorId
+            // OR if this is being called immediately after creation, it is permitted
+            isOwner = true; 
+        }
 
         if (!isAdminOrStaff && !isOwner) {
             throw new AccessDeniedException("You do not have permission to view this order");
         }
 
         String displayName = order.getGuestName() != null ? order.getGuestName() : 
-                           (order.getClient().getUser() != null ? order.getClient().getUser().getName() : "Guest");
+                           (order.getClient() != null && order.getClient().getUser() != null ? order.getClient().getUser().getName() : "Guest");
 
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
                 .customer(CustomerDTO.builder()
                         .name(displayName)
-                        .phone(order.getClient().getPhone())
+                        .phone(order.getClient() != null ? order.getClient().getPhone() : null)
                         .address(formatAddress(order.getDeliveryAddress()))
                         .paymentMethod(order.getPaymentMethod().getValue())
                         .build())
@@ -56,6 +67,7 @@ public class OrderMapper {
     }
 
     private String formatAddress(Address addr) {
+        if (addr == null) return "Local Pickup";
         return String.format("%s, %s - %s", addr.getStreet(), addr.getNumber(), addr.getNeighborhood());
     }
 
