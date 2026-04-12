@@ -33,6 +33,7 @@ sabormineiro:
   app:
     jwtSecret: ${JWT_SECRET}
     jwtExpirationMs: 86400000
+    frontendUrl: ${FRONTEND_URL:http://localhost}
   admin:
     email: ${ADMIN_EMAIL}
     password: ${ADMIN_PASSWORD}

@@ -56,10 +56,19 @@ public class WebSecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
+  @Value("${sabormineiro.app.frontendUrl:http://localhost}")
+  private String frontendUrl;
+
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("http://localhost", "http://127.0.0.1", "http://localhost:3000", "http://localhost:5173"));
+    configuration.setAllowedOrigins(Arrays.asList(
+        "http://localhost", 
+        "http://127.0.0.1", 
+        "http://localhost:3000", 
+        "http://localhost:5173",
+        frontendUrl
+    ));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
     configuration.setAllowCredentials(true);
