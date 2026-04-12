@@ -79,6 +79,13 @@ public class SaborMineiroApiApplication {
 				user -> {
 					user.setName("Demo");
 					user.setPassword(passwordEncoder.encode(demoPassword));
+					
+					// Force assign DEMO role if not present
+					Role demoRole = roleRepository.findByName(ERole.DEMO).get();
+					if (!user.getRoles().contains(demoRole)) {
+						user.getRoles().add(demoRole);
+					}
+					
 					userRepository.save(user);
 				},
 				() -> {
@@ -87,7 +94,7 @@ public class SaborMineiroApiApplication {
 							.name("Demo")
 							.email(demoEmail)
 							.password(passwordEncoder.encode(demoPassword))
-							.roles(Set.of(demoRole))
+							.roles(new java.util.HashSet<>(java.util.List.of(demoRole)))
 							.build();
 					userRepository.save(demo);
 				}
