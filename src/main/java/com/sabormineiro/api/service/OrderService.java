@@ -108,7 +108,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderResponseDTO> findAll() {
-        return orderRepository.findAll().stream()
+        return orderRepository.findAllByOrderByCreatedAtDesc().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
