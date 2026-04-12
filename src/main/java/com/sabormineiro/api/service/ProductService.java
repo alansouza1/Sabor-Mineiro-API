@@ -26,13 +26,13 @@ public class ProductService {
     public ProductDTO toDTO(Product product) {
         return ProductDTO.builder()
                 .id(product.getId())
-                .nome(product.getNome())
-                .descricao(product.getDescricao())
-                .preco(product.getPreco())
-                .url_imagem(product.getUrlImagem())
-                .qtd_disp(product.getQtdDisp())
-                .precisa_produzir(product.getPrecisaProduzir())
-                .categoria(product.getCategoria().getValue())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .imageUrl(product.getImageUrl())
+                .availableQuantity(product.getAvailableQuantity())
+                .needsProduction(product.getNeedsProduction())
+                .category(product.getCategory().getValue())
                 .build();
     }
 }

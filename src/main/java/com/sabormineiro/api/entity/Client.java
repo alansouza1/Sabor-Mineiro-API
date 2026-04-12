@@ -21,7 +21,7 @@ public class Client {
     private Long id;
 
     @Column(nullable = false, length = 11)
-    private String celular;
+    private String phone;
 
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;

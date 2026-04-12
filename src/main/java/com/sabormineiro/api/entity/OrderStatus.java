@@ -4,24 +4,24 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    CRIADO("Criado"),
-    SOLICITADO_CANCELAMENTO_CLIENTE("Solicitado cancelamento cliente"),
-    CANCELADO_PELO_CLIENTE("Cancelado pelo cliente"),
-    AGUARDANDO_PAGAMENTO_PIX("Aguardando pagamento PIX"),
-    PAGAMENTO_PIX_INICIADO("Pagamento em PIX iniciado"),
-    PIX_NAO_REALIZADO_TIMEOUT("Pix não realizado via timeout"),
-    ORDEM_PRODUCAO_E_ENTREGA_ORDENADA("Produção e entrega ordenada"),
-    PAGAMENTO_RECEBIDO_PIX("Pagamento recebido em PIX"),
-    EM_PRODUCAO("Em produção"),
-    SOLICITADO_CANCELAMENTO_ESTABELECIMENTO("Solicitado cancelamento estabelecimento"),
-    CANCELADO_ESTABELECIMENTO_E_ESTORNADO("Cancelado estabelecimento e estornado"),
-    COM_PROBLEMAS_NA_PRODUCAO("Com problemas na produção"),
-    PRODUZIDO_E_AGUARDANDO_ENTREGA("Produzido e aguardando entrega"),
-    SAIU_PARA_ENTREGA("Saiu para entrega"),
-    COM_PROBLEMAS_NO_PACOTE("Com problemas no pacote"),
-    COM_PROBLEMAS_NA_ENTREGA("Com problemas na entrega"),
-    ENTREGUE("Entregue"),
-    FINALIZADO("Finalizado");
+    CREATED("Created"),
+    CLIENT_CANCELLATION_REQUESTED("Client cancellation requested"),
+    CANCELLED_BY_CLIENT("Cancelled by client"),
+    AWAITING_PIX_PAYMENT("Awaiting PIX payment"),
+    PIX_PAYMENT_STARTED("PIX payment started"),
+    PIX_TIMEOUT_EXPIRED("Pix payment expired by timeout"),
+    PRODUCTION_AND_DELIVERY_ORDERED("Production and delivery ordered"),
+    PIX_PAYMENT_RECEIVED("PIX payment received"),
+    IN_PRODUCTION("In production"),
+    ESTABLISHMENT_CANCELLATION_REQUESTED("Establishment cancellation requested"),
+    CANCELLED_AND_REFUNDED("Cancelled and refunded"),
+    PRODUCTION_PROBLEMS("Production issues detected"),
+    PRODUCED_AWAITING_DELIVERY("Produced and awaiting delivery"),
+    OUT_FOR_DELIVERY("Out for delivery"),
+    PACKAGING_PROBLEMS("Packaging issues detected"),
+    DELIVERY_PROBLEMS("Delivery issues detected"),
+    DELIVERED("Delivered"),
+    FINISHED("Finished");
 
     private final String description;
 
@@ -35,6 +35,6 @@ public enum OrderStatus {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Unknown status: " + description);
+        throw new IllegalArgumentException("Unknown status description: " + description);
     }
 }

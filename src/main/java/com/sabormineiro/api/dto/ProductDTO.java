@@ -1,5 +1,8 @@
 package com.sabormineiro.api.dto;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +16,24 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductDTO {
     private Long id;
-    private String nome;
-    private String descricao;
-    private BigDecimal preco;
-    private String url_imagem;
-    private Integer qtd_disp;
-    private Boolean precisa_produzir;
-    private String categoria;
+
+    @NotBlank(message = "Product name is required")
+    private String name;
+
+    private String description;
+
+    @NotNull(message = "Product price is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
+    private BigDecimal price;
+
+    private String imageUrl;
+
+    @NotNull(message = "Available quantity is required")
+    private Integer availableQuantity;
+
+    @NotNull(message = "Production status is required")
+    private Boolean needsProduction;
+
+    @NotBlank(message = "Category is required")
+    private String category;
 }

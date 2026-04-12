@@ -21,24 +21,24 @@ public class Product {
     private Long id;
 
     @Column(nullable = false)
-    private String nome;
+    private String name;
 
     @Column(length = 500)
-    private String descricao;
+    private String description;
 
     @Column(nullable = false)
-    private BigDecimal preco;
+    private BigDecimal price;
 
-    @Column(name = "url_imagem")
-    private String urlImagem;
+    @Column(name = "image_url")
+    private String imageUrl;
 
-    @Column(name = "qtd_disp", nullable = false)
-    private Integer qtdDisp;
+    @Column(name = "available_quantity", nullable = false)
+    private Integer availableQuantity;
 
-    @Column(name = "precisa_produzir", nullable = false)
-    private Boolean precisaProduzir;
+    @Column(name = "needs_production", nullable = false)
+    private Boolean needsProduction;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category categoria;
+    private Category category;
 }
