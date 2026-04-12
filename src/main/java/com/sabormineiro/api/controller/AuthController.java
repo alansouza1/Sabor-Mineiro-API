@@ -89,38 +89,10 @@ public class AuthController {
         .password(encoder.encode(signUpRequest.getPassword()))
         .build();
 
-    Set<String> strRoles = signUpRequest.getRole();
     Set<Role> roles = new HashSet<>();
-
-    if (strRoles == null) {
-      Role userRole = roleRepository.findByName(ERole.CLIENTE)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(userRole);
-    } else {
-      strRoles.forEach(role -> {
-        switch (role.toLowerCase()) {
-        case "admin":
-          Role adminRole = roleRepository.findByName(ERole.ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(adminRole);
-          break;
-        case "cozinheiro":
-          Role cozinheiroRole = roleRepository.findByName(ERole.COZINHEIRO)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(cozinheiroRole);
-          break;
-        case "demo":
-          Role demoRole = roleRepository.findByName(ERole.DEMO)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(demoRole);
-          break;
-        default:
-          Role userRole = roleRepository.findByName(ERole.CLIENTE)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(userRole);
-        }
-      });
-    }
+    Role userRole = roleRepository.findByName(ERole.CLIENTE)
+        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+    roles.add(userRole);
 
     user.setRoles(roles);
     userRepository.save(user);
