@@ -60,6 +60,12 @@ public class SaborMineiroApiApplication {
 			userRepository.findByEmail(adminEmail).ifPresentOrElse(
 				user -> {
 					user.setPassword(passwordEncoder.encode(adminPassword));
+					
+					Role adminRole = roleRepository.findByName(ERole.ADMIN).get();
+					Set<Role> roles = new java.util.HashSet<>();
+					roles.add(adminRole);
+					user.setRoles(roles);
+					
 					userRepository.save(user);
 				},
 				() -> {
@@ -68,7 +74,7 @@ public class SaborMineiroApiApplication {
 							.name("Admin")
 							.email(adminEmail)
 							.password(passwordEncoder.encode(adminPassword))
-							.roles(Set.of(adminRole))
+							.roles(new java.util.HashSet<>(java.util.List.of(adminRole)))
 							.build();
 					userRepository.save(admin);
 				}
@@ -80,11 +86,11 @@ public class SaborMineiroApiApplication {
 					user.setName("Demo");
 					user.setPassword(passwordEncoder.encode(demoPassword));
 					
-					// Force assign DEMO role if not present
+					// Re-assign roles to ensure consistency
 					Role demoRole = roleRepository.findByName(ERole.DEMO).get();
-					if (!user.getRoles().contains(demoRole)) {
-						user.getRoles().add(demoRole);
-					}
+					Set<Role> roles = new java.util.HashSet<>();
+					roles.add(demoRole);
+					user.setRoles(roles);
 					
 					userRepository.save(user);
 				},
