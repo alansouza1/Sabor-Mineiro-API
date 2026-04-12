@@ -12,6 +12,7 @@ import com.sabormineiro.api.repository.ClientRepository;
 import com.sabormineiro.api.repository.RoleRepository;
 import com.sabormineiro.api.repository.UserRepository;
 import com.sabormineiro.api.service.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-...
 @Slf4j
 @RestController
 @RequestMapping("/auth")

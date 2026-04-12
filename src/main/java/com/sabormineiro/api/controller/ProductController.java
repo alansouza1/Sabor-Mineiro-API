@@ -5,6 +5,7 @@ import com.sabormineiro.api.entity.Category;
 import com.sabormineiro.api.entity.Product;
 import com.sabormineiro.api.repository.ProductRepository;
 import com.sabormineiro.api.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-...
 @Slf4j
 @RestController
 @RequestMapping("/products")

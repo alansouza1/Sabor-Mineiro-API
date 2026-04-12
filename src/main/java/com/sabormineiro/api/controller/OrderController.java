@@ -4,6 +4,7 @@ import com.sabormineiro.api.dto.OrderRequestDTO;
 import com.sabormineiro.api.dto.OrderResponseDTO;
 import com.sabormineiro.api.dto.OrderStatusUpdateDTO;
 import com.sabormineiro.api.service.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-...
 @Slf4j
 @RestController
 @RequestMapping("/orders")
