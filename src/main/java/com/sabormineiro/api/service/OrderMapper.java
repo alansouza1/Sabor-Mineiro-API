@@ -27,6 +27,7 @@ public class OrderMapper {
         String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean isAdminOrStaff = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || 
+                               a.getAuthority().equals("ROLE_DEMO") || 
                                a.getAuthority().equals("ROLE_COZINHEIRO") || 
                                a.getAuthority().equals("ROLE_ATENDENTE"));
         
