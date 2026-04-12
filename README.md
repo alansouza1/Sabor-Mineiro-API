@@ -42,7 +42,9 @@ The project follows a **Multi-layered Clean Architecture** to ensure scalability
 *   **RBAC (Role-Based Access Control):** Granular permissions managed through Spring Security configuration and JWT filters.
     *   **ADMIN:** Full access to manage the catalog and orders.
     *   **DEMO:** Specialized role for reviewers with read-only dashboard access. 
-*   **Session Isolation:** Implements a `visitor_id` strategy. Demo users only see orders created in their specific browser session (identified via `X-Visitor-Id` header).
+    *   **Brute-Force Protection:** Implements IP-based **Rate Limiting** on the login endpoint using **Bucket4j**. This prevents automated attacks and preserves server CPU by blocking excessive failed attempts (10 requests per minute).
+    *   **Session Isolation:** Implements a `visitor_id` strategy.
+ Demo users only see orders created in their specific browser session (identified via `X-Visitor-Id` header).
 
 > **🔒 Privacy Notice:** This is a public demo. The system implements **Session Isolation** to prevent users from seeing each other's data, but users are still encouraged to use fictional information.
 
