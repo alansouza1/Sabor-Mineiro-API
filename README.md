@@ -128,7 +128,7 @@ src/main/java/com/sabormineiro/api/
 
 ## 🔗 Frontend Repository
 
-https://github.com/alansouza1/sabor-mineiro-app
+Link: https://github.com/alansouza1/Sabor-Mineiro-App
 
 ---
 
