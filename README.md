@@ -1,4 +1,4 @@
-# Sabor Mineiro - Backend API ⚙️
+# Sabor Mineiro - Backend API ⚙️ 
 
 A production-like RESTful API powering the Sabor Mineiro delivery platform. Built with Java Spring Boot, this project demonstrates advanced architectural patterns, stateless security, and robust data persistence.
 
